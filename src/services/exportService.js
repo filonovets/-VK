@@ -43,6 +43,8 @@ export const exportToPDF = async (formData) => {
             />
           )}
           <Text style={styles.heading}>{formData.fullName}</Text>
+          <Text style={styles.text}>Направление специальности: {formData.specialization}</Text>
+          <Text style={styles.text}>Профессиональные навыки: {formData.skills}</Text>
           <Text style={styles.text}>Контакты: {formData.contacts}</Text>
           <Text style={styles.text}>Образование: {formData.education}</Text>
           <Text style={styles.text}>Опыт работы: {formData.experience}</Text>
@@ -84,6 +86,12 @@ export const exportToDOCX = async (formData) => {
         }),
         new Paragraph({
           children: [new TextRun({ text: `Контакты: ${formData.contacts}`, size: 24 })]
+        }),
+        new Paragraph({
+          children: [new TextRun({ text: `Направление специальности: ${formData.specialization}`, size: 24 })]
+        }),
+        new Paragraph({
+          children: [new TextRun({ text: `Профессиональные навыки: ${formData.skills}`, size: 24 })]
         }),
         new Paragraph({
           children: [new TextRun({ text: `Образование: ${formData.education}`, size: 24 })]
