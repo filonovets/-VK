@@ -62,51 +62,73 @@ export const exportToPDF = async (formData) => {
 };
 
 export const exportToDOCX = async (formData) => {
-  // Конвертируем base64 URL в Buffer для docx
-  const imageBuffer = await fetch(formData.photo)
-    .then(res => res.arrayBuffer());
+  let sections = [{
+    properties: {},
+    children: [
+      new Paragraph({
+        children: [new TextRun({ text: formData.fullName, bold: true, size: 28 })]
+      }),
+      new Paragraph({
+        children: [new TextRun({ text: `Контакты: ${formData.contacts}`, size: 24 })]
+      }),
+      new Paragraph({
+        children: [new TextRun({ text: `Направление специальности: ${formData.specialization}`, size: 24 })]
+      }),
+      new Paragraph({
+        children: [new TextRun({ text: `Профессиональные навыки: ${formData.skills}`, size: 24 })]
+      }),
+      new Paragraph({
+        children: [new TextRun({ text: `Образование: ${formData.education}`, size: 24 })]
+      }),
+      new Paragraph({
+        children: [new TextRun({ text: `Опыт работы: ${formData.experience}`, size: 24 })]
+      })
+    ]
+  }];
+
+  // Добавляем фото только если оно есть
+  if (formData.photo) {
+    try {
+      const imageBuffer = await fetch(formData.photo)
+        .then(res => res.arrayBuffer())
+        .catch(error => {
+          console.error('Ошибка при загрузке изображения:', error);
+          return null;
+        });
+
+      if (imageBuffer) {
+        sections[0].children.unshift(
+          new Paragraph({
+            children: [
+              new ImageRun({
+                data: imageBuffer,
+                transformation: {
+                  width: 150,
+                  height: 150,
+                },
+              }),
+            ],
+          })
+        );
+      }
+    } catch (error) {
+      console.error('Ошибка при обработке изображения:', error);
+    }
+  }
 
   const doc = new DocxDocument({
-    sections: [{
-      properties: {},
-      children: [
-        formData.photo && new Paragraph({
-          children: [
-            new ImageRun({
-              data: imageBuffer,
-              transformation: {
-                width: 150,
-                height: 150,
-              },
-            }),
-          ],
-        }),
-        new Paragraph({
-          children: [new TextRun({ text: formData.fullName, bold: true, size: 28 })]
-        }),
-        new Paragraph({
-          children: [new TextRun({ text: `Контакты: ${formData.contacts}`, size: 24 })]
-        }),
-        new Paragraph({
-          children: [new TextRun({ text: `Направление специальности: ${formData.specialization}`, size: 24 })]
-        }),
-        new Paragraph({
-          children: [new TextRun({ text: `Профессиональные навыки: ${formData.skills}`, size: 24 })]
-        }),
-        new Paragraph({
-          children: [new TextRun({ text: `Образование: ${formData.education}`, size: 24 })]
-        }),
-        new Paragraph({
-          children: [new TextRun({ text: `Опыт работы: ${formData.experience}`, size: 24 })]
-        })
-      ]
-    }]
+    sections: sections
   });
 
-  const blob = await Packer.toBlob(doc);
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `${formData.fullName}_resume.docx`;
-  link.click();
+  try {
+    const blob = await Packer.toBlob(doc);
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${formData.fullName}_resume.docx`;
+    link.click();
+  } catch (error) {
+    console.error('Ошибка при создании DOCX файла:', error);
+    throw new Error('Не удалось создать DOCX файл');
+  }
 };
