@@ -1,0 +1,33 @@
+{
+    "name": "vk-resume-builder",
+    "version": "1.0.0",
+    "description": "VK мини-приложение для создания резюме",
+    "main": "index.js",
+    "scripts": {
+        "start": "react-scripts start",
+        "build": "react-scripts build",
+        "test": "react-scripts test",
+        "eject": "react-scripts eject"
+    },
+    "dependencies": {
+        "@vkontakte/vk-bridge": "^2.7.2",
+        "@vkontakte/vkui": "^5.1.0",
+        "@react-pdf/renderer": "^3.1.12",
+        "docx": "^8.2.2",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-scripts": "5.0.1"
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    }
+}
